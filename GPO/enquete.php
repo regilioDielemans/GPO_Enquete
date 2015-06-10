@@ -1,40 +1,60 @@
-<?php require 'includes/header.php'; ?>
+<?php require __DIR__ . '/includes/header.php'; ?>
 
-<form method="post" action="controller.php" role="form" >
+<?php
+$branche = $_GET['location'];
 
 
-			<h1>GPO enquete</h1>
+$queryBranch = $db->query("SELECT questions.question, questions.id FROM branche_question as tbl_bq
+    INNER JOIN questions ON tbl_bq.question_id = questions.id
+    INNER JOIN branches ON tbl_bq.branche_id = branches.id WHERE
+    branches.id = $branche");
 
-			
-			<div class="form-group col-md-8">
-				<label for="rol">1. Is er binnen 500 meter een invalidenparkeerplaats (let op in Oosterhout mag je met een IPK op alle parkeerplaatsen gratis parkeren.)</label>
-			</div>
-			<div class="form-group col-md-4">
-					<input type="radio" name="vraag1" id="inlineRadio1" value="option1"> ja
-					<input type="radio" name="vraag1" id="inlineRadio2" value="option2"> nee
-			</div>
-				
-			<div class="form-group col-md-8">
-				<label for="rol">2. Is er binnen 500 meter een algemene parkeergelegenheid</label>
-			</div>
+$query = $db->query("SELECT * from questions where id < 31 ");
 
-			<div class="form-group col-md-4">
-					<input type="radio" name="vraag2" id="inlineRadio1" value="option1"> ja
-					<input type="radio" name="vraag2" id="inlineRadio2" value="option2"> nee
-			</div>
-				
-			
-			<div class="form-group col-md-8">
-				<label for="rol">3. Is er binnen 500 meter een bushalte</label>
-			</div>
-			<div class="form-group col-md-4">
-					<input type="radio" name="vraag3" id="inlineRadio1" value="option1"> ja
-					<input type="radio" name="vraag3" id="inlineRadio2" value="option2"> nee
-			</div>
+$questions = $query->fetchAll(PDO::FETCH_OBJ);
+$branche_questions = $queryBranch->fetchAll(PDO::FETCH_OBJ);
 
-			<div class="form-group col-md-12">
-				<input type="submit" value="volgende" name="enquete" class="btn btn-large">
-			</div>
-		</form>
+?>
+
+<form action="controllers/submissioncontroller.php" method="POST" class="col-md-12" style="padding: 20px">
+
+
+        <h3>Algemeen</h3>
+        <?php foreach($questions as $question): ?>
+            <div class="row">
+            <div class="form-group" style="border-bottom: 1px solid #ccc">
+                <label class="checkbox-inline col-md-8" for="">
+                    <?= $question->question ?>
+
+                </label>
+                <div class=" col-md-2 col-md-offset-1 inputs">
+                <input type="radio" name="<?=$question->id?>" value="1"/> Ja
+                <input type="radio" name="<?=$question->id?>" value="0"/> Nee
+                </div>
+            </div>
+            </div>
+        <?php endforeach; ?>
+
+        <h4>Branche specifiek</h4>
+        <?php foreach ($branche_questions as $question): ?>
+            <div class="row">
+                <div class="form-group" style="border-bottom: 1px solid #ccc">
+                    <label class="checkbox-inline col-md-8" for="">
+                        <?= $question->question ?>
+
+                    </label>
+                    <div class=" col-md-2 col-md-offset-1 inputs">
+                        <input type="radio" name="<?= $question->id?>" value="1"/> Ja
+                        <input type="radio" name="<?= $question->id?>" value="0"/> Nee
+                    </div>
+                </div>
+            </div>
+        <?php endforeach; ?>
+    <div class="row" style="margin-top: 20px">
+    <input type="submit" class="btn btn-primary pull-right" value="Verzenden"/>
+    </div>
+</form>
+
+
 
 <?php require 'includes/footer.php'; ?>

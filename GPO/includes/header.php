@@ -1,3 +1,5 @@
+<?php session_start(); ?>
+<?php require __DIR__ . '/DB.php'; ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
